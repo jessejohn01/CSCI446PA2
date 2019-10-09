@@ -126,6 +126,6 @@ We will grade the assignment as follows:
 
 This project was adapted from Kishore Ramachandran version of this assignment.
 
-
+This assignment is being worked on by Jesse Arstein and Jay Van Alstyne. Any commits to this repository is in an effort to turn this assignment in.
 
 
