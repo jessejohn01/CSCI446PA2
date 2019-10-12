@@ -1,4 +1,4 @@
-import Network
+import network_3_0
 import argparse
 import time
 from time import sleep
@@ -60,7 +60,7 @@ class RDT:
     byte_buffer = ''
 
     def __init__(self, role_S, server_S, port):
-        self.network = Network.NetworkLayer(role_S, server_S, port)
+        self.network = network_3_0.NetworkLayer(role_S, server_S, port)
     
     def disconnect(self):
         self.network.disconnect()
@@ -89,12 +89,6 @@ class RDT:
             #remove the packet bytes from the buffer
             self.byte_buffer = self.byte_buffer[length:]
             #if this was the last packet, will return on the next iteration
-            
-    
-    def rdt_2_1_send(self, msg_S):
-        p = Packet(self.seq_num, msg_S)   #create packet with length, sequence number, checksum, and message
-        self.network.udt_send(p.get_byte_S())
-        self.waitForACK(p)
 
 
     def waitForACK(self,p):   #Wait for an ACK Packet. Basically listening for a packet.
@@ -118,35 +112,6 @@ class RDT:
                             return
                         else:
                             self.network.udt_send(p.get_byte_S())
-
-
-
-
-    def rdt_2_1_receive(self):
-        ret_S = None
-        byte_S = self.network.udt_receive()
-        self.byte_buffer += byte_S
-        while True:
-            if (len(self.byte_buffer) < Packet.length_S_length): #Do we have enough bytes?
-                return ret_S
-            length = int(self.byte_buffer[:Packet.length_S_length])
-            if (len(self.byte_buffer) < length):#Does bytes match length?
-                return ret_S
-
-            if(Packet.corrupt(self.byte_buffer[0:length])): #check if packet is corrupt
-                nack = Packet(self.seq_num, 'NACK')
-                self.network.udt_send(nack.get_byte_S())
-                self.byte_buffer = self.byte_buffer[length:]
-            else:
-                p = Packet.from_byte_S(self.byte_buffer[0:length])
-
-                if (p.seq_num == self.seq_num):  #Check if packet is corrupt
-                    ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
-                    self.seq_num = self.seq_num + 1
-                    ack = Packet(p.seq_num, 'ACK')
-                    self.network.udt_send(ack.get_byte_S())
-                    self.waitForMore(ack)
-                self.byte_buffer = self.byte_buffer[length:]
                     
     def waitForMore(self, ack): #Method for making sure there is no resends. Wait for .1 seconds
         end = time.time() + .1
