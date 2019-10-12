@@ -3,7 +3,7 @@ import socket
 import threading
 from time import sleep
 import random
-import rdt_3_0
+import rdt_2_1
 
 
 ## Provides an abstraction for the network layer
@@ -58,7 +58,7 @@ class NetworkLayer:
             return
         # corrupt a packet
         if random.random() < self.prob_byte_corr:
-            start = random.randint(rdt_3_0.Packet.length_S_length,
+            start = random.randint(rdt_2_1.Packet.length_S_length,
                                    len(msg_S) - 5)  # make sure we are not corrupting the length field,
             # since that makes life really difficult
             num = random.randint(1, 5)
